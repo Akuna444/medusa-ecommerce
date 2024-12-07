@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env # Load environment variables from .env file
+    ports:
+      - "9000:9000" # Expose backend port
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:15
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: medusa-backend
+    ports:
+      - "5433:5432" # Map the internal PostgreSQL port 5432 to external 5433
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6
+    container_name: redis_container
+    restart: always
+    ports:
+      - "6379:6379" # Expose Redis port
+
+volumes:
+  postgres_data:
